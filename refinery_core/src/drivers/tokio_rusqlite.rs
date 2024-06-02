@@ -1,4 +1,4 @@
-use crate::traits::r#async::{Migrate, Query, Transaction};
+use crate::traits::r#async::{AsyncMigrate, AsyncQuery, AsyncTransaction};
 use crate::Migration;
 use tokio_rusqlite::{Connection as RqlConnection, Error as RqlError};
 use time::format_description::well_known::Rfc3339;
