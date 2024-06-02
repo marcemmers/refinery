@@ -1,6 +1,9 @@
 #[cfg(feature = "rusqlite")]
 pub mod rusqlite;
 
+#[cfg(feature = "tokio-rusqlite")]
+pub mod tokio_rusqlite;
+
 #[cfg(feature = "tokio-postgres")]
 pub mod tokio_postgres;
 
