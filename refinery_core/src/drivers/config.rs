@@ -98,6 +98,7 @@ macro_rules! with_connection {
 
 #[cfg(any(
     feature = "tokio-postgres",
+    feature = "tokio-rusqlite",
     feature = "mysql_async",
     feature = "tiberius-config"
 ))]
@@ -117,7 +118,16 @@ macro_rules! with_connection_async {
                 }
             }
             ConfigDbType::Sqlite => {
-                panic!("tried to migrate async from config for a sqlite database, but this feature is not implemented yet");
+                cfg_if::cfg_if! {
+                    if #[cfg(feature = "tokio-rusqlite")] {
+                        //may have been checked earlier on config parsing, even if not let it fail with a Rusqlite db file not found error
+                        let path = $config.db_path().map(|p| p.to_path_buf()).unwrap_or_default();
+                        let conn = rusqlite::Connection::open_with_flags(path, rusqlite::OpenFlags::SQLITE_OPEN_READ_WRITE).migration_err("could not open database", None)?;
+                        $op(conn).await
+                    } else {
+                        panic!("tried to migrate from config for a sqlite database, but feature rusqlite not enabled!");
+                    }
+                }                
             }
             ConfigDbType::Postgres => {
                 cfg_if::cfg_if! {
@@ -222,6 +232,7 @@ impl crate::Migrate for Config {
 #[cfg(any(
     feature = "mysql_async",
     feature = "tokio-postgres",
+    feature = "tokio-rusqlite",
     feature = "tiberius-config"
 ))]
 #[async_trait]
