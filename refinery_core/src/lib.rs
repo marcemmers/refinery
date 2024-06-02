@@ -16,6 +16,9 @@ pub use crate::util::{
 #[cfg(feature = "rusqlite")]
 pub use rusqlite;
 
+#[cfg(feature = "tokio-rusqlite")]
+pub use tokio_rusqlite;
+
 #[cfg(feature = "postgres")]
 pub use postgres;
 
